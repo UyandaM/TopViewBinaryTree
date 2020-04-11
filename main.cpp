@@ -15,9 +15,9 @@ class node
 
 int maxDepth(node* node);
 node* newNode(int data);
-void treeDepth(node* node, int depth);
-void treeWidth(node* node, int width);
-
+void treeDepth(node* node, int depth, vector<int>& depths, vector<int>& data);
+void treeWidth(node* node, int width, vector<int>& widths);
+void widthSort(vector<int>& widths, vector<int>& depths, vector<int>& data);
 
 // Driver code
 int main()
@@ -29,12 +29,25 @@ int main()
     root->left->left = newNode(4);
     root->left->right = newNode(5);
 
+    vector<int> depths;
+    vector<int> widths;
+    vector<int> data;
+
     int depth = 0;
 
-    //treeDepth(root, depth);
+    treeDepth(root, depth, depths, data);
+
+    cout << endl << endl << endl;
 
     int width = 0;
-    treeWidth(root, width);
+    treeWidth(root, width, widths);
+
+    cout << endl << endl << endl;
+
+    widthSort(widths, depths, data);
+
+
+
 
     return 0;
 }
@@ -73,7 +86,7 @@ node* newNode(int data)
 
 
 
-void treeDepth(node* node, int depth)
+void treeDepth(node* node, int depth, vector<int>& depths, vector<int>& data)
 {
     if(node == NULL)
     {
@@ -83,13 +96,15 @@ void treeDepth(node* node, int depth)
 
     depth++;
     cout << node->data << " " << depth << endl;
-    treeDepth(node->left, depth);
-    treeDepth(node->right, depth);
+    data.push_back(node->data);
+    depths.push_back(depth);
+    treeDepth(node->left, depth, depths, data);
+    treeDepth(node->right, depth, depths, data);
 
 }
 
 
-void treeWidth(node* node, int width)
+void treeWidth(node* node, int width, vector<int>& widths)
 {
     if(node == NULL)
     {
@@ -97,8 +112,53 @@ void treeWidth(node* node, int width)
     }
 
     cout << node->data << " " << width<< endl;
-    width++;
-    treeWidth(node->left, width);
-    width = width - 1;
-    treeWidth(node->right, width);
+    widths.push_back(width);
+    width--;
+    treeWidth(node->left, width, widths);
+    width += 2;
+    treeWidth(node->right, width, widths);
 }
+
+void widthSort(vector<int>& widths, vector<int>& depths, vector<int>& data)
+{
+    cout << "width\tdepth\tdata\n";
+    for(int i = 0; i < data.size(); i++)
+    {
+        cout << widths.at(i) << "\t" << depths.at(i) << "\t"<< data.at(i) << endl;
+    }
+    cout << endl << endl << endl;
+    cout << endl << endl << endl;
+
+    int temp = 0;
+    int mysize = data.size();
+    for(int i = 0; i < data.size() - 1; i++)
+    {
+        for (int j = i + 1; j < data.size(); j++)
+        {
+            if (widths.at(i) > widths.at(j))
+            {
+                temp = widths.at(i);
+                widths.at(i) = widths.at(j);
+                widths.at(j) = temp;
+
+                temp = data.at(i);
+                data.at(i) = data.at(j);
+                data.at(j) = temp;
+
+                temp = depths.at(i);
+                depths.at(i) = depths.at(j);
+                depths.at(j) = temp;
+            }
+        }
+    }
+    cout << endl << endl << endl;
+    cout << endl << endl << endl;
+    cout << "width\tdepth\tdata\n";
+    for(int i = 0; i < data.size(); i++)
+    {
+        cout << widths.at(i) << "\t" << depths.at(i) << "\t"<< data.at(i) << endl;
+    }
+}
+
+
+
